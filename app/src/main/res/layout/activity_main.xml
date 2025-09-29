@@ -11,15 +11,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/start_camera_btn"
-        android:layout_width="411dp"
-        android:layout_height="357dp"
-        android:background="@android:drawable/dialog_holo_light_frame"
-        android:text="@string/start_camera"
-        app:backgroundTint="@color/design_default_color_secondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="377dp" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

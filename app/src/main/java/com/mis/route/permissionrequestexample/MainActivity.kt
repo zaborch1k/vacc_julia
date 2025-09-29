@@ -58,9 +58,8 @@ class MainActivity : AppCompatActivity() {
                     else cameraPermissionRationaleDialog.show()
                 }
             }
-
-
-        binding.startCameraBtn.setOnClickListener { requestCameraPermissionFlow() }
+        requestCameraPermissionFlow()
+        //binding.startCameraBtn.setOnClickListener { requestCameraPermissionFlow() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -151,6 +150,11 @@ class MainActivity : AppCompatActivity() {
             }
 
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startCamera()
     }
 
     override fun onDestroy() {
