@@ -24,11 +24,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding get() = _binding!!
-    private lateinit var cameraPermissionRequestLauncher: ActivityResultLauncher<String>
-    private lateinit var cameraPermissionRationaleDialog: AlertDialog
+
+    private lateinit var permissionsRequestLauncher: ActivityResultLauncher<Array<String>>
+
+    private lateinit var camAndmicPermissionsDialog: AlertDialog
+
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
 
@@ -38,56 +42,45 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        cameraPermissionRationaleDialog = createDialog(
-            "Дай разрешения на камеру , пожажа",
-            "Слушай , мы не можем без разрешения камеру включить",
-            "Запросить ещё раз",
-            { cameraPermissionRequestLauncher.launch(Manifest.permission.CAMERA) },
-            "Мне пуфик"
-        )
+        permissionsRequestLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
+            val micGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
 
-        cameraPermissionRequestLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    startCamera()
-                } else {
-                    if (cameraPermissionRationaleDialog.isShowing)
-                        cameraPermissionRequestLauncher.launch(Manifest.permission.CAMERA)
-                    else cameraPermissionRationaleDialog.show()
+            if (cameraGranted && micGranted) {
+                startCamera()
+            } else {
+                if (!camAndmicPermissionsDialog.isShowing) {
+                    camAndmicPermissionsDialog.show()
                 }
             }
+        }
+
         requestCameraPermissionFlow()
-        //binding.startCameraBtn.setOnClickListener { requestCameraPermissionFlow() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
 
 
-    // STEP 2- define the permission request flow
     private fun requestCameraPermissionFlow() {
+        val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        val hasMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
         when {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
+            hasCamera && hasMic -> {
                 startCamera()
             }
-
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this, Manifest.permission.CAMERA
-            ) -> {
-                if (cameraPermissionRationaleDialog.isShowing)
-                    cameraPermissionRequestLauncher.launch(Manifest.permission.CAMERA)
-                else cameraPermissionRationaleDialog.show()
+            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO) -> {
+                if (!camAndmicPermissionsDialog.isShowing) {
+                    camAndmicPermissionsDialog.show()
+                }
             }
-
             else -> {
-                cameraPermissionRequestLauncher.launch(
-                    Manifest.permission.CAMERA
+                permissionsRequestLauncher.launch(
+                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
                 )
             }
         }
@@ -155,6 +148,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startCamera()
+    }
+
+    fun closeApp() {
+        finish()  // Эт закрывает приложение
     }
 
     override fun onDestroy() {
