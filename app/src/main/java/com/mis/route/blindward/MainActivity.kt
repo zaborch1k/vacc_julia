@@ -4,38 +4,25 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ihateandroid.blindward.databinding.ActivityMainBinding
 import android.Manifest
 import android.util.Log
-import android.view.ViewGroup.LayoutParams
-import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.constraintlayout.widget.ConstraintSet
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding get() = _binding!!
-
     private lateinit var permissionsRequestLauncher: ActivityResultLauncher<Array<String>>
-
-    private lateinit var camAndmicPermissionsDialog: AlertDialog
-
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,39 +32,42 @@ class MainActivity : AppCompatActivity() {
         permissionsRequestLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
-            val cameraGranted = permissions[Manifest.permission.CAMERA] ?: false
-            val micGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
+            val isCameraGranted = permissions[Manifest.permission.CAMERA] ?: false
+            val isMicGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: false
 
-            if (cameraGranted && micGranted) {
+            if (isCameraGranted && isMicGranted) {
                 startCamera()
             } else {
-                if (!camAndmicPermissionsDialog.isShowing) {
-                    camAndmicPermissionsDialog.show()
-                }
+                // TODO: add dialog or bigger popup [?]
+                Toast.makeText(
+                    this,
+                    "Пожалуйста, предоставьте разрешения на камеру и микрофон в настройках",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+            // Some problems with commits, need to add a comment
         }
 
-        requestCameraPermissionFlow()
-
+        checkAndRequestPermissions()
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    private fun checkAndRequestPermissions() {
+        val isCameraGranted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
 
-
-    private fun requestCameraPermissionFlow() {
-        val hasCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        val hasMic = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val isMicGranted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
 
         when {
-            hasCamera && hasMic -> {
+            isCameraGranted && isMicGranted -> {
                 startCamera()
             }
-            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO) -> {
-                if (!camAndmicPermissionsDialog.isShowing) {
-                    camAndmicPermissionsDialog.show()
-                }
-            }
+
             else -> {
                 permissionsRequestLauncher.launch(
                     arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
@@ -86,37 +76,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createDialog(
-        title: String,
-        message: String,
-        posBtnText: String? = null,
-        posBtnAction: (() -> Unit)? = null,
-        negBtnText: String? = null,
-        negBtnAction: (() -> Unit)? = null,
-        isCancelable: Boolean = false
-    ): AlertDialog {
-        return MaterialAlertDialogBuilder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(posBtnText) { dialog, _ ->
-                dialog.dismiss()
-                posBtnAction?.invoke()
-            }
-            .setNegativeButton(negBtnText) { dialog, _ ->
-                dialog.dismiss()
-                negBtnAction?.invoke()
-            }
-            .setCancelable(isCancelable)
-            .create()
-    }
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Показ камеры
             val preview = Preview.Builder()
                 .build()
                 .also {
@@ -126,14 +91,11 @@ class MainActivity : AppCompatActivity() {
             imageCapture = ImageCapture.Builder()
                 .build()
 
-            // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
@@ -143,15 +105,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         }, ContextCompat.getMainExecutor(this))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        startCamera()
-    }
-
-    fun closeApp() {
-        finish()  // Эт закрывает приложение
     }
 
     override fun onDestroy() {

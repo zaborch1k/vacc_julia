@@ -164,12 +164,12 @@ Java Threads: ( => current thread )
   0x0000021a5feca8d0 JavaThread "Asynchronous log dispatcher for DefaultDaemonConnection: socket connection from /127.0.0.1:61998 to /127.0.0.1:62022"        [_thread_blocked, id=5356, stack(0x000000772f700000,0x000000772f800000) (1024K)]
   0x0000021a5fecaf60 JavaThread "Stdin handler"                     [_thread_blocked, id=18552, stack(0x000000772f800000,0x000000772f900000) (1024K)]
   0x0000021a690594a0 JavaThread "Daemon client event forwarder"        [_thread_blocked, id=20464, stack(0x000000772f900000,0x000000772fa00000) (1024K)]
-  0x0000021a6905aee0 JavaThread "Cache worker for checksums cache (H:\projects\CameraTestApplication\PermissionRequestExampleWithCamera-master\.gradle\8.2\checksums)"        [_thread_blocked, id=9932, stack(0x000000772fa00000,0x000000772fb00000) (1024K)]
+  0x0000021a6905aee0 JavaThread "Cache worker for checksums cache (H:\projects\CameraTestApplication\blindward\.gradle\8.2\checksums)"        [_thread_blocked, id=9932, stack(0x000000772fa00000,0x000000772fb00000) (1024K)]
   0x0000021a69058780 JavaThread "Cache worker for cache directory md-rule (H:\projectsAndroid\grable\caches\8.2\md-rule)"        [_thread_blocked, id=4212, stack(0x000000772fb00000,0x000000772fc00000) (1024K)]
-  0x0000021a6905a1c0 JavaThread "Cache worker for file hash cache (H:\projects\CameraTestApplication\PermissionRequestExampleWithCamera-master\.gradle\8.2\fileHashes)"        [_thread_blocked, id=19616, stack(0x000000772fc00000,0x000000772fd00000) (1024K)]
+  0x0000021a6905a1c0 JavaThread "Cache worker for file hash cache (H:\projects\CameraTestApplication\blindward\.gradle\8.2\fileHashes)"        [_thread_blocked, id=19616, stack(0x000000772fc00000,0x000000772fd00000) (1024K)]
   0x0000021a69058e10 JavaThread "Cache worker for cache directory md-supplier (H:\projectsAndroid\grable\caches\8.2\md-supplier)"        [_thread_blocked, id=18408, stack(0x000000772fd00000,0x000000772fe00000) (1024K)]
-  0x0000021a615f9fd0 JavaThread "Cache worker for dependencies-accessors (H:\projects\CameraTestApplication\PermissionRequestExampleWithCamera-master\.gradle\8.2\dependencies-accessors)"        [_thread_blocked, id=23944, stack(0x0000007731700000,0x0000007731800000) (1024K)]
-  0x0000021a615f7f00 JavaThread "Cache worker for Build Output Cleanup Cache (H:\projects\CameraTestApplication\PermissionRequestExampleWithCamera-master\.gradle\buildOutputCleanup)"        [_thread_blocked, id=13764, stack(0x0000007731900000,0x0000007731a00000) (1024K)]
+  0x0000021a615f9fd0 JavaThread "Cache worker for dependencies-accessors (H:\projects\CameraTestApplication\blindward\.gradle\8.2\dependencies-accessors)"        [_thread_blocked, id=23944, stack(0x0000007731700000,0x0000007731800000) (1024K)]
+  0x0000021a615f7f00 JavaThread "Cache worker for Build Output Cleanup Cache (H:\projects\CameraTestApplication\blindward\.gradle\buildOutputCleanup)"        [_thread_blocked, id=13764, stack(0x0000007731900000,0x0000007731a00000) (1024K)]
   0x0000021a615f8c20 JavaThread "Unconstrained build operations"        [_thread_blocked, id=10876, stack(0x0000007731a00000,0x0000007731b00000) (1024K)]
   0x0000021a615f9940 JavaThread "Unconstrained build operations Thread 2"        [_thread_blocked, id=19668, stack(0x0000007731c00000,0x0000007731d00000) (1024K)]
   0x0000021a615f8590 JavaThread "Unconstrained build operations Thread 3"        [_thread_blocked, id=24048, stack(0x0000007731d00000,0x0000007731e00000) (1024K)]
@@ -193,7 +193,7 @@ Java Threads: ( => current thread )
   0x0000021a69263110 JavaThread "Execution worker Thread 9"         [_thread_blocked, id=5308, stack(0x0000007733200000,0x0000007733300000) (1024K)]
   0x0000021a69263e30 JavaThread "Execution worker Thread 10"        [_thread_blocked, id=1624, stack(0x0000007733300000,0x0000007733400000) (1024K)]
   0x0000021a69262a80 JavaThread "Execution worker Thread 11"        [_thread_blocked, id=16204, stack(0x0000007733400000,0x0000007733500000) (1024K)]
-  0x0000021a60ebaec0 JavaThread "Cache worker for execution history cache (H:\projects\CameraTestApplication\PermissionRequestExampleWithCamera-master\.gradle\8.2\executionHistory)"        [_thread_blocked, id=19700, stack(0x0000007733500000,0x0000007733600000) (1024K)]
+  0x0000021a60ebaec0 JavaThread "Cache worker for execution history cache (H:\projects\CameraTestApplication\blindward\.gradle\8.2\executionHistory)"        [_thread_blocked, id=19700, stack(0x0000007733500000,0x0000007733600000) (1024K)]
   0x0000021a61126790 JavaThread "Unconstrained build operations Thread 12"        [_thread_blocked, id=22556, stack(0x0000007733600000,0x0000007733700000) (1024K)]
   0x0000021a611274b0 JavaThread "Unconstrained build operations Thread 13"        [_thread_blocked, id=23544, stack(0x0000007733700000,0x0000007733800000) (1024K)]
   0x0000021a5f8f74e0 JavaThread "Unconstrained build operations Thread 14"        [_thread_blocked, id=15212, stack(0x0000007733800000,0x0000007733900000) (1024K)]
@@ -2009,10 +2009,10 @@ Dynamic libraries:
 0x00007ffb6c600000 - 0x00007ffb6c686000 	C:\WINDOWS\System32\fwpuclnt.dll
 0x00007ffb71a90000 - 0x00007ffb71ac6000 	C:\WINDOWS\SYSTEM32\ntmarta.dll
 0x00007ffb6fcc0000 - 0x00007ffb6fd5e000 	C:\WINDOWS\system32\apphelp.dll
-0x00007ffb63570000 - 0x00007ffb6358e000 	C:\Users\Àðò¸ì\AppData\Local\Temp\native-platform12234003201760086354dir\native-platform.dll
+0x00007ffb63570000 - 0x00007ffb6358e000 	C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\Temp\native-platform12234003201760086354dir\native-platform.dll
 
 dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
-symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Android\Android Studio\jbr\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.5074_none_3e0d6f78e32fd63f;C:\Program Files\Android\Android Studio\jbr\bin\server;H:\projectsAndroid\grable\native\68d5fa5c4cc2d200863cafc0d521ce42e7d3e7ee720ec0a83991735586a16f82\windows-amd64;H:\projectsAndroid\grable\native\e376f236ea51e6404a007f0833ffe2c6e607c4080706a723a18a27aeea778392\windows-amd64;C:\Users\Àðò¸ì\AppData\Local\Temp\native-platform12234003201760086354dir
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Android\Android Studio\jbr\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.26100.5074_none_3e0d6f78e32fd63f;C:\Program Files\Android\Android Studio\jbr\bin\server;H:\projectsAndroid\grable\native\68d5fa5c4cc2d200863cafc0d521ce42e7d3e7ee720ec0a83991735586a16f82\windows-amd64;H:\projectsAndroid\grable\native\e376f236ea51e6404a007f0833ffe2c6e607c4080706a723a18a27aeea778392\windows-amd64;C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\Temp\native-platform12234003201760086354dir
 
 VM Arguments:
 jvm_args: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED -Xmx2048m -Dfile.encoding=UTF-8 -Duser.country=RU -Duser.language=ru -Duser.variant -javaagent:H:\projectsAndroid\grable\wrapper\dists\gradle-8.2-bin\bbg7u40eoinfdyxsxr3z4i7ta\gradle-8.2\lib\agents\gradle-instrumentation-agent-8.2.jar 
@@ -2048,7 +2048,7 @@ Log output configuration:
  #1: stderr all=off uptime,level,tags foldmultilines=false
 
 Environment Variables:
-PATH=C:\VulkanSDK\1.4.321.1\Bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\Àðò¸ì\AppData\Local\Programs\Python\Launcher\;C:\Users\Àðò¸ì\AppData\Local\Microsoft\WindowsApps;C:\Users\Àðò¸ì\AppData\Local\Programs\Microsoft VS Code\bin;C:\msys64\mingw64\bin;C:\Users\Àðò¸ì\.dotnet\tools;C:\Users\Àðò¸ì\AppData\Local\GitHubDesktop\bin
+PATH=C:\VulkanSDK\1.4.321.1\Bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\Programs\Python\Launcher\;C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\Microsoft\WindowsApps;C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\Programs\Microsoft VS Code\bin;C:\msys64\mingw64\bin;C:\Users\ï¿½ï¿½ï¿½ï¿½\.dotnet\tools;C:\Users\ï¿½ï¿½ï¿½ï¿½\AppData\Local\GitHubDesktop\bin
 USERNAME=Someone
 OS=Windows_NT
 PROCESSOR_IDENTIFIER=AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
