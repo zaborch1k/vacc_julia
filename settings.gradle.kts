@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Permission Request Example"
+rootProject.name = "Blind Ward"
 include(":app")
  
