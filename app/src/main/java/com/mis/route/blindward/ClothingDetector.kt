@@ -1,4 +1,4 @@
-package com.mis.route.blindward
+package com.ihateandroid.blindward
 
 import android.content.Context
 import android.graphics.Bitmap

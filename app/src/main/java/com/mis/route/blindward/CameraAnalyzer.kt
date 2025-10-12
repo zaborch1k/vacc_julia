@@ -1,8 +1,7 @@
-package com.mis.route.myapp
+package com.ihateandroid.blindward
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
@@ -11,8 +10,6 @@ import android.util.Log
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.mis.route.blindward.ClothingDetector
-import com.mis.route.blindward.DetectionResult
 import java.io.ByteArrayOutputStream
 
 class CameraAnalyzer(

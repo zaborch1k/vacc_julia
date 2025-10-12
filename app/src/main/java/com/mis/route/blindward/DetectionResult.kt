@@ -1,4 +1,4 @@
-package com.mis.route.blindward
+package com.ihateandroid.blindward
 
 class DetectionResult(
 

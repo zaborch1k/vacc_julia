@@ -1,23 +1,34 @@
 package com.ihateandroid.blindward
 
+// базовые компоненты Android Framework
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import com.ihateandroid.blindward.databinding.ActivityMainBinding
 import android.Manifest
+import android.os.Bundle
+
 import android.util.Log
 import android.widget.Toast
+
+// AndroidX
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+
+// View
+import com.ihateandroid.blindward.databinding.ActivityMainBinding
+
+// TTS
+import android.speech.tts.TextToSpeech
+import java.util.Locale
+
+// Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+
+// жизненный цикл CameraX(автоматическое управление камерой)
 import androidx.camera.lifecycle.ProcessCameraProvider
-import com.mis.route.blindward.ClothingDetector
-import com.mis.route.blindward.DetectionResult
-import com.mis.route.myapp.CameraAnalyzer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -25,6 +36,10 @@ class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding get() = _binding!!
     private lateinit var permissionsRequestLauncher: ActivityResultLauncher<Array<String>>
+
+    private lateinit var textToSpeech: TextToSpeech
+    private var isTTSInitialized = false
+
     private var imageCapture: ImageCapture? = null
 
     private lateinit var clothingDetector: ClothingDetector
@@ -41,6 +56,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         clothingDetector = ClothingDetector(this)
+
+        initialTTS()
 
         permissionsRequestLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -85,6 +102,35 @@ class MainActivity : AppCompatActivity() {
                     arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
                 )
             }
+        }
+    }
+
+    private fun initialTTS() {
+        textToSpeech = TextToSpeech(this) { status ->
+
+            if (status == TextToSpeech.SUCCESS) {
+                isTTSInitialized = true
+
+                val result = textToSpeech.setLanguage(Locale("ru", "RU"))
+
+                // проверка поддержки языка
+                if (result == TextToSpeech.LANG_MISSING_DATA ||
+                    result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "Язык не поддерживается")
+                }
+            } else {
+                Log.e("TTS", "Ошибка инициализации TTS")
+            }
+        }
+    }
+    private fun speechText(text: String) {
+        // Проверкак инициализации
+        if (isTTSInitialized) {
+            // Озвучиваем текст
+            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        } else {
+            // Можно добавить сообщение пользователю
+            Log.e("TTS" , "Ошибка speechText")
         }
     }
 
@@ -146,7 +192,8 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             when {
                 detections.isEmpty() -> {
-                    Toast.makeText(this@MainActivity, "Nothing", Toast.LENGTH_SHORT).show()
+                    speechText("Ничего")
+                    Toast.makeText(this@MainActivity, "Ничего", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     val mainDetection = detections.maxByOrNull { it.confidence }
@@ -174,6 +221,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.stop()
+            textToSpeech.shutdown()
+        }
         _binding = null
         cameraExecutor.shutdown()
     }
