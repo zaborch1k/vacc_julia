@@ -1,5 +1,4 @@
 package com.mis.route.myapp
-
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
@@ -23,25 +22,28 @@ class CameraAnalyzer(
     @ExperimentalGetImage
     override fun analyze(imageProxy: ImageProxy) {
         try {
-            val image = imageProxy.image ?: return
+            val image: Image? = imageProxy.image
+            if (image == null) {
+                Log.e("CameraAnalyzer", "Image is null")
+                onDetectionResult(emptyList())
+                return
+            }
 
             Log.d("CameraAnalyzer", "Получен кадр: ${image.width}x${image.height}, формат: ${image.format}")
 
-            val bitmap = when (image.format) {
-                ImageFormat.YUV_420_888 -> convertYUV420ToBitmap(image)
-                ImageFormat.NV21 -> convertNV21ToBitmap(image) // 👈 Формат 1 = NV21
-                else -> {
-                    Log.e("CameraAnalyzer", "Неизвестный формат: ${image.format}")
-                    return
-                }
-            }
+            val bitmap = convertYUVToBitmap(image)
 
             if (bitmap != null) {
-                // Поворачиваем bitmap для портретного режима
+                // bitmap  в портретный режим
                 val rotatedBitmap = rotateBitmap(bitmap, 90f)
+
                 val detections = clothingDetector.detect(rotatedBitmap)
                 Log.d("CameraAnalyzer", "Найдено объектов: ${detections.size}")
                 onDetectionResult(detections)
+
+                // Очистка bitmap
+                bitmap.recycle()
+                rotatedBitmap.recycle()
             } else {
                 Log.e("CameraAnalyzer", "Не удалось конвертировать изображение в Bitmap")
                 onDetectionResult(emptyList())
@@ -62,9 +64,14 @@ class CameraAnalyzer(
     }
 
     @ExperimentalGetImage
-    private fun convertYUV420ToBitmap(image: Image): Bitmap? {
+    private fun convertYUVToBitmap(image: Image): Bitmap? {
         try {
             val planes = image.planes
+            if (planes.size < 3) {
+                Log.e("CameraAnalyzer", "Недостаточно planes в YUV изображении: ${planes.size}")
+                return null
+            }
+
             val yBuffer = planes[0].buffer
             val uBuffer = planes[1].buffer
             val vBuffer = planes[2].buffer
@@ -78,51 +85,22 @@ class CameraAnalyzer(
             // Y plane
             yBuffer.get(nv21, 0, ySize)
 
-            // U and V planes
+            // U & V planes
             vBuffer.get(nv21, ySize, vSize)
             uBuffer.get(nv21, ySize + vSize, uSize)
 
             val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
             val out = ByteArrayOutputStream()
-            yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 80, out)
+
+            // качество сжатия
+            yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
             val imageBytes = out.toByteArray()
             out.close()
 
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 
         } catch (e: Exception) {
-            Log.e("CameraAnalyzer", "Ошибка конвертации YUV420: ${e.message}", e)
-            return null
-        }
-    }
-
-    @ExperimentalGetImage
-    private fun convertNV21ToBitmap(image: Image): Bitmap? {
-        try {
-            val planes = image.planes
-            val yBuffer = planes[0].buffer
-            val uvBuffer = planes[1].buffer
-
-            val ySize = yBuffer.remaining()
-            val uvSize = uvBuffer.remaining()
-
-            val nv21 = ByteArray(ySize + uvSize)
-
-            // Y plane
-            yBuffer.get(nv21, 0, ySize)
-            // UV plane
-            uvBuffer.get(nv21, ySize, uvSize)
-
-            val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
-            val out = ByteArrayOutputStream()
-            yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 80, out)
-            val imageBytes = out.toByteArray()
-            out.close()
-
-            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
-        } catch (e: Exception) {
-            Log.e("CameraAnalyzer", "Ошибка конвертации NV21: ${e.message}", e)
+            Log.e("CameraAnalyzer", "Ошибка конвертации YUV: ${e.message}", e)
             return null
         }
     }
