@@ -1,4 +1,9 @@
 <resources>
-    <string name="app_name">BlindWard</string>
-    <string name="start_camera">Start Camera</string>
+    <string name="app_name">blindWard</string>
+    <string name="app_subtitle">Помощник для слабовидящих</string>
+    <string name="btn_description">Описание</string>
+    <string name="btn_compatibility">Сочетаемость</string>
+    <string name="ready_status">Готов к запросу</string>
+    <string name="processing_status">Обработка запроса...</string>
+    <string name="error_status">Ошибка запроса</string>
 </resources>

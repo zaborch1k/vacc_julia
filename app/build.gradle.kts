@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ihateandroid.blindward"
+    namespace = "com.mis.route.blindward"  // ⬅️ ИЗМЕНЕНО!
     compileSdk = 34
 
     defaultConfig {
-        applicationId = rootProject.extra["defaultApplicationId"] as String
+        applicationId = "com.ihateandroid.blindward"  // ⬅️ Это можно оставить
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -46,6 +46,11 @@ android {
 }
 
 dependencies {
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
 
     // TensorFlow
     implementation("org.tensorflow:tensorflow-lite:2.13.0")
