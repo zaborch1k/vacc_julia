@@ -1,0 +1,8 @@
+Jacket
+Jeans
+Jogger
+Polo
+Shirt
+Short
+T-Shirt
+Trouser
