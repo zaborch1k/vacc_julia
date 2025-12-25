@@ -46,26 +46,19 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private lateinit var clothingDetector: ClothingDetector
     private lateinit var cameraExecutor: ExecutorService
 
-    // Text-to-Speech
     private var tts: TextToSpeech? = null
     private var isTtsReady = false
 
-    // Camera components
     private var cameraProvider: ProcessCameraProvider? = null
     private var imageAnalysis: ImageAnalysis? = null
     private var imageCapture: ImageCapture? = null
 
-    // GigaChat API
     private val client = createUnsafeOkHttpClient()
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    // Флаг блокировки кнопок
     private var isRequestInProgress = false
 
-    // Последнее распознанное описание
     private var lastDetectedClothing = "одежда не распознана"
-
-    // GigaChat credentials
 
     private val GIGACHAT_CLIENT_ID = "secret"
     private val GIGACHAT_CLIENT_SECRET = "secret"
@@ -178,7 +171,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     Log.d(TAG, "Фото сохранено: " + photoFile.absolutePath)
                     uploadPhotoAndAnalyze(photoFile, requestType)
-                    //optimizeAndUploadPhoto(photoFile, requestType)
                 }
 
                 override fun onError(exc: ImageCaptureException) {
@@ -194,10 +186,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun optimizeAndUploadPhoto(originalFile: File, requestType: String) {
         scope.launch(Dispatchers.IO) {
             try {
-                // Читаем и оптимизируем изображение
                 val bitmap = BitmapFactory.decodeFile(originalFile.absolutePath)
 
-                // Сжимаем до разумного размера (макс 800px)
                 val maxSize = 800
                 val width = bitmap.width
                 val height = bitmap.height
@@ -213,7 +203,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                 val scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true)
 
-                // Сохраняем оптимизированное фото
                 val optimizedFile = File(cacheDir, "optimized_" + System.currentTimeMillis() + ".jpg")
                 val outputStream = FileOutputStream(optimizedFile)
                 scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
@@ -224,10 +213,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 Log.d(TAG, "Оптимизированный файл: размер=" + fileSize + " байт, " +
                         "разрешение=" + scaledWidth + "x" + scaledHeight)
 
-                // Удаляем оригинал
                 originalFile.delete()
 
-                // Загружаем оптимизированный файл
                 uploadPhotoAndAnalyze(optimizedFile, requestType)
 
             } catch (e: Exception) {
@@ -245,6 +232,7 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun uploadPhotoAndAnalyze(photoFile: File, requestType: String) {
         if (accessToken == null) {
             showToast("Токен не получен")
+            speakText("Проверьте подключение к интернету")
             getAccessToken()
             photoFile.delete()
             setButtonsEnabled(true)
@@ -256,7 +244,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         scope.launch(Dispatchers.IO) {
             try {
-                // Шаг 1: Загружаем файл в GigaChat
                 val requestBody = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart(
@@ -286,10 +273,9 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
                     Log.d(TAG, "Файл загружен, ID: " + fileId)
 
-                    // Удаляем локальный файл
+
                     photoFile.delete()
 
-                    // Шаг 2: Отправляем запрос на генерацию с file_id
                     withContext(Dispatchers.Main) {
                         makeGigaChatRequestWithFile(fileId, requestType)
                     }
@@ -319,12 +305,6 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         scope.launch(Dispatchers.IO) {
             try {
-//                val prompt = when (requestType) {
-//                    "description" -> "Опиши одежду на этом изображении. Укажи цвет, тип одежды и стиль. Ответ должен быть коротким для слабовидящего человека (1-2 предложения)."
-//                    "compatibility" -> "С чем можно сочетать одежду на этом изображении? Дай краткие рекомендации для слабовидящего человека (2-3 варианта)."
-//                    else -> "Опиши что на изображении"
-//                }
-
                 val prompt = when (requestType) {
                     "description" -> "Действуй строго по инструкции. Не добавляй лишних слов, комментариев, рассуждений и пояснений.  \n" +
                             "\n" +
@@ -383,14 +363,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     else -> "Опиши что на изображении"
                 }
 
-                // Правильный формат согласно документации
                 val jsonBody = JSONObject().apply {
                     put("model", "GigaChat-2-Pro")
                     put("messages", JSONArray().apply {
                         put(JSONObject().apply {
                             put("role", "user")
                             put("content", prompt)
-                            // attachments - массив строк с file_id
                             put("attachments", JSONArray().apply {
                                 put(fileId)
                             })
@@ -423,12 +401,20 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                             val json = JSONObject(responseBody)
                             val choices = json.getJSONArray("choices")
                             if (choices.length() > 0) {
-                                val message = choices.getJSONObject(0)
+                                val rmessage = choices.getJSONObject(0)
                                     .getJSONObject("message")
                                     .getString("content")
 
-                                Log.d(TAG, "Получен ответ: " + message)
-                                speakText(message)
+                                Log.d(TAG, "Получен ответ: " + rmessage)
+                                val message = rmessage.trim()
+                                if (message == "one") {
+                                    speakText("Нельзя определить сочетаемость, на фото только один элемент одежды")
+                                } else if (message == "false") {
+                                    speakText("На фото нет одежды")
+                                } else {
+                                    speakText(message)
+                                }
+
                                 updateStatus("Получен ответ", false)
                             } else {
                                 showToast("Пустой ответ от GigaChat")
